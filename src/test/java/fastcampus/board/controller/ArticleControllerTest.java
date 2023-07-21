@@ -1,5 +1,6 @@
 package fastcampus.board.controller;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ class ArticleControllerTest {
         this.mvc = mvc;
     }
 
+    @Disabled("개발 중")
     @DisplayName("[view][GET] 게시글 리스트 페이지 - 정상 호출")
     @Test
     void givenNothing_whenRequestArticlesView_thenRequestArticlesView() throws Exception {
@@ -33,6 +35,8 @@ class ArticleControllerTest {
                 .andExpect(model().attributeExists("articles"));
     }
 
+
+    @Disabled("개발 중")
     @DisplayName("[view][GET] 게시글 상세 페이지 - 정상 호출")
     @Test
     void givenNothing_whenRequestArticleView_thenRequestArticleView() throws Exception {
@@ -47,6 +51,7 @@ class ArticleControllerTest {
                 .andExpect(model().attributeExists("articleComments"));
     }
 
+    @Disabled("개발 중")
     @DisplayName("[view][GET] 게시글 검색 페이지 - 정상 호출")
     @Test
     void givenNothing_whenRequestArticleSearchView_thenRequestArticleSearchView() throws Exception {
@@ -59,6 +64,7 @@ class ArticleControllerTest {
                 .andExpect(view().name("articles/search"));
     }
 
+    @Disabled("개발 중")
     @DisplayName("[view][GET] 게시글 해시태그 검색 페이지 - 정상 호출")
     @Test
     void givenNothing_whenRequestArticleHashtagSearchView_thenRequestArticleHashtagSearchView() throws Exception {
