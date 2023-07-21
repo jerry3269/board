@@ -10,7 +10,10 @@
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
-.idea/**/shelf  
+.idea/**/shelf
+
+# querydsl generated 파일 추가
+/src/main/generated
 
 # AWS User-specific
 .idea/**/aws.xml
