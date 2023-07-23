@@ -1,11 +1,13 @@
 package fastcampus.board.controller;
 
+import fastcampus.board.config.SecurityConfig;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Disabled("불필요한 테스트이므로 제외")
 @DisplayName("Data Rest - API 데스트")
 @Transactional
+@Import(SecurityConfig.class)
 @AutoConfigureMockMvc
 @SpringBootTest
 public class DataRestTest {
