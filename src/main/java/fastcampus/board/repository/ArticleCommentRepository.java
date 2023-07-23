@@ -3,7 +3,6 @@ package fastcampus.board.repository;
 import com.querydsl.core.types.dsl.DateTimeExpression;
 import com.querydsl.core.types.dsl.StringExpression;
 import fastcampus.board.domain.ArticleComment;
-import fastcampus.board.domain.QArticle;
 import fastcampus.board.domain.QArticleComment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
