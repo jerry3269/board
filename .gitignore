@@ -15,6 +15,9 @@
 # querydsl generated 파일 추가
 /src/main/generated
 
+# JPA Buddy 파일 제외
+.jpb/
+
 # AWS User-specific
 .idea/**/aws.xml
 
