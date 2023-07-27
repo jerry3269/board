@@ -45,6 +45,7 @@ public class ArticleController {
         List<Integer> barNumbers = paginationService.getPaginationBarNumbers(pageable.getPageNumber(), articles.getTotalPages());
         model.addAttribute("articles", articles);
         model.addAttribute("paginationBarNumbers", barNumbers);
+        model.addAttribute("searchTypes", SearchType.values());
         return "articles/index";
     }
 
