@@ -1,7 +1,6 @@
 package fastcampus.board.controller;
 
 import fastcampus.board.domain.type.SearchType;
-import fastcampus.board.repository.ArticleRepository;
 import fastcampus.board.response.ArticleResponse;
 import fastcampus.board.response.ArticleWithCommentsResponse;
 import fastcampus.board.service.ArticleService;
@@ -52,7 +51,7 @@ public class ArticleController {
 
     @GetMapping("/{articleId}")
     public String article(@PathVariable Long articleId, ModelMap model) {
-        ArticleWithCommentsResponse article = ArticleWithCommentsResponse.from(articleService.getArticle(articleId));
+        ArticleWithCommentsResponse article = ArticleWithCommentsResponse.from(articleService.getArticleWithComments(articleId));
         model.addAttribute("article", article);
         model.addAttribute("articleComments",  article.articleCommentsResponse());
         model.addAttribute("totalCount", articleService.getArticleCount());
