@@ -59,6 +59,7 @@
                       th:text="'previous'"
                       th:href="@{/articles(
                       page=${articles.number - 1},
+                      sort=${param.sort},
                       searchType=${searchType.name},
                       searchValue=${param.searchValue})}"
                       th:class="'page-link' + (${articles.number} <= 0 ? ' disabled' : '')"
@@ -68,6 +69,7 @@
                           th:text="${pageNumber + 1}"
                           th:href="@{/articles(
                           page=${pageNumber},
+                          sort=${param.sort},
                           searchType=${searchType.name},
                           searchValue=${param.searchValue})}"
                           th:class="'page-link' + (${pageNumber} == ${articles.number} ? ' disabled' : '')"
@@ -77,6 +79,7 @@
                       th:text="'next'"
                       th:href="@{/articles(
                       page=${articles.number + 1},
+                      sort=${param.sort},
                       searchType=${searchType.name},
                       searchValue=${param.searchValue})}"
                       th:class="'page-link' + (${articles.number} >= ${articles.totalPages - 1} ? ' disabled' : '')"
