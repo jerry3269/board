@@ -1,10 +1,12 @@
 package fastcampus.board.service;
 
 import fastcampus.board.domain.Article;
-import fastcampus.board.domain.type.SearchType;
+import fastcampus.board.domain.UserAccount;
+import fastcampus.board.domain.constant.SearchType;
 import fastcampus.board.dto.ArticleDto;
 import fastcampus.board.dto.ArticleWithCommentsDto;
 import fastcampus.board.repository.ArticleRepository;
+import fastcampus.board.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,7 @@ import java.util.List;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final UserAccountRepository userAccountRepository;
 
     public Page<ArticleDto> searchArticles(SearchType searchType, String searchKeyword, Pageable pageable) {
         if (searchKeyword == null || searchKeyword.isBlank()) {
@@ -37,21 +40,28 @@ public class ArticleService {
         };
     }
 
-    public ArticleWithCommentsDto getArticle(Long articleId) {
+    public ArticleWithCommentsDto getArticleWithComments(Long articleId) {
         return articleRepository.findById(articleId)
                 .map(ArticleWithCommentsDto::from)
                 .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다 - articleId: " + articleId));
     }
 
+    public ArticleDto getArticle(Long articleId) {
+        return articleRepository.findById(articleId)
+                .map(ArticleDto::from)
+                .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다 - articleId: " + articleId));
+    }
+
     @Transactional
     public void saveArticle(ArticleDto dto) {
-        articleRepository.save(dto.toEntity());
+        UserAccount userAccount = userAccountRepository.getReferenceById(dto.userAccountDto().userId());
+        articleRepository.save(dto.toEntity(userAccount));
 
     }
     @Transactional
-    public void updateArticle(ArticleDto dto) {
+    public void updateArticle(Long articleId, ArticleDto dto) {
         try {
-            Article article = articleRepository.getReferenceById(dto.id());
+            Article article = articleRepository.getReferenceById(articleId);
             if(dto.title() != null) {article.setTitle(dto.title());}
             if(dto.content() != null) {article.setContent(dto.content());}
             article.setHashtag(dto.hashtag());
