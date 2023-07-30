@@ -1,7 +1,8 @@
 package fastcampus.board.service;
 
 import fastcampus.board.domain.Article;
-import fastcampus.board.domain.type.SearchType;
+import fastcampus.board.domain.UserAccount;
+import fastcampus.board.domain.constant.SearchType;
 import fastcampus.board.dto.ArticleDto;
 import fastcampus.board.dto.ArticleWithCommentsDto;
 import fastcampus.board.repository.ArticleRepository;
@@ -53,13 +54,14 @@ public class ArticleService {
 
     @Transactional
     public void saveArticle(ArticleDto dto) {
-        articleRepository.save(dto.toEntity());
+        UserAccount userAccount = userAccountRepository.getReferenceById(dto.userAccountDto().userId());
+        articleRepository.save(dto.toEntity(userAccount));
 
     }
     @Transactional
-    public void updateArticle(ArticleDto dto) {
+    public void updateArticle(Long articleId, ArticleDto dto) {
         try {
-            Article article = articleRepository.getReferenceById(dto.id());
+            Article article = articleRepository.getReferenceById(articleId);
             if(dto.title() != null) {article.setTitle(dto.title());}
             if(dto.content() != null) {article.setContent(dto.content());}
             article.setHashtag(dto.hashtag());
