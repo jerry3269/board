@@ -1,9 +1,10 @@
 package fastcampus.board.controller;
 
-import fastcampus.board.dto.UserAccountDto;
 import fastcampus.board.dto.request.ArticleCommentRequest;
+import fastcampus.board.dto.security.BoardPrincipal;
 import fastcampus.board.service.ArticleCommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,10 +18,9 @@ public class ArticleCommentController {
     private final ArticleCommentService articleCommentService;
 
     @PostMapping("/new")
-    public String postNewArticleComment(ArticleCommentRequest articleCommentRequest) {
-        articleCommentService.saveArticleComment(articleCommentRequest.toDto(
-                UserAccountDto.of("uno", "pw", "uno@gmail.com", null, null)
-        ));
+    public String postNewArticleComment(ArticleCommentRequest articleCommentRequest,
+                                        @AuthenticationPrincipal BoardPrincipal boardPrincipal) {
+        articleCommentService.saveArticleComment(articleCommentRequest.toDto(boardPrincipal.toDto()));
 
         return "redirect:/articles/" + articleCommentRequest.articleId();
     }
@@ -28,9 +28,10 @@ public class ArticleCommentController {
     @PostMapping("/{commentId}/delete")
     public String deleteArticleComment(
             @PathVariable Long commentId,
-            Long articleId
+            Long articleId,
+            @AuthenticationPrincipal BoardPrincipal boardPrincipal
     ) {
-        articleCommentService.deleteArticleComment(commentId);
+        articleCommentService.deleteArticleComment(commentId, boardPrincipal.getUsername());
 
         return "redirect:/articles/" + articleId;
     }
