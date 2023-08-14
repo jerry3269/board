@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestSecurityConfig.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-public class DataRestTest {
+class DataRestTest {
 
     private final MockMvc mvc;
 
