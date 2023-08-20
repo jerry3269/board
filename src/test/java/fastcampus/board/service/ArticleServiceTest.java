@@ -362,7 +362,7 @@ class ArticleServiceTest {
 
     private UserAccount createUserAccount(String userId) {
         return UserAccount.of(
-                "uno",
+                userId,
                 "password",
                 "uno@email.com",
                 "Uno",
