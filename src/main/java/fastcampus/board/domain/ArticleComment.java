@@ -33,7 +33,7 @@ public class ArticleComment extends AuditingFields{
 
     @ToString.Exclude
     @OrderBy("createdAt ASC")
-    @OneToMany(mappedBy = "parentCommentId")
+    @OneToMany(mappedBy = "parentCommentId", cascade = CascadeType.ALL)
     private Set<ArticleComment> childComments = new LinkedHashSet<>();
 
     @Setter @Column(nullable = false, length = 500) private String content;
