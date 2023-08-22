@@ -1,4 +1,4 @@
-package fastcampus.board.response;
+package fastcampus.board.dto.response;
 
 import fastcampus.board.dto.ArticleWithCommentsDto;
 import fastcampus.board.dto.HashtagDto;
