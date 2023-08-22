@@ -8,7 +8,7 @@ import fastcampus.board.dto.ArticleWithCommentsDto;
 import fastcampus.board.dto.HashtagDto;
 import fastcampus.board.dto.UserAccountDto;
 import fastcampus.board.dto.request.ArticleRequest;
-import fastcampus.board.response.ArticleResponse;
+import fastcampus.board.dto.response.ArticleResponse;
 import fastcampus.board.service.ArticleService;
 import fastcampus.board.service.PaginationService;
 import fastcampus.board.util.FormDataEncoder;
