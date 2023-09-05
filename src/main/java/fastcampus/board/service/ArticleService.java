@@ -31,7 +31,6 @@ public class ArticleService {
     private final HashtagService hashtagService;
     private final ArticleRepository articleRepository;
     private final UserAccountRepository userAccountRepository;
-    private final HashtagRepository hashtagRepository;
 
     public Page<ArticleDto> searchArticles(SearchType searchType, String searchKeyword, Pageable pageable) {
         if (searchKeyword == null || searchKeyword.isBlank()) {
@@ -121,9 +120,6 @@ public class ArticleService {
         return articleRepository.findByHashtagNames(List.of(hashtagName), pageable).map(ArticleDto::from);
     }
 
-    public List<String> getHashtags() {
-        return hashtagRepository.findAllHashtagNames(); // TODO: HashtagService 로 이동을 고려해보자.
-    }
 
     private Set<Hashtag> renewHashtagsFormContent(String content) {
         Set<String> hashtagNamesInContent = hashtagService.parseHashtagNames(content);
