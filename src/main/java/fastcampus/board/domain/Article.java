@@ -25,25 +25,14 @@ public class Article extends AuditingFields{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter @ManyToOne(optional = false) @JoinColumn(name = "userId") private UserAccount userAccount; // 유저 정보 (ID)
+    @Setter @ManyToOne(optional = false, fetch = FetchType.LAZY) @JoinColumn(name = "userId") private UserAccount userAccount; // 유저 정보 (ID)
     @Setter @Column(nullable = false, length = 255) private String title;
     @Setter @Column(nullable = false, length = 10000) private String content;
-
-    @ToString.Exclude
-    @JoinTable(
-            name = "article_hashtag",
-            joinColumns = @JoinColumn(name = "articleId"),
-            inverseJoinColumns = @JoinColumn(name = "hashtagId")
-    )
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Hashtag> hashtags = new LinkedHashSet<>();
 
     @ToString.Exclude
     @OrderBy("createdAt DESC")
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
-
-
 
     private Article(UserAccount userAccount, String title, String content) {
         this.userAccount = userAccount;
@@ -53,18 +42,6 @@ public class Article extends AuditingFields{
 
     public static Article of(UserAccount userAccount, String title, String content) {
         return new Article(userAccount, title, content);
-    }
-
-    public void addHashtag(Hashtag hashtag) {
-        this.getHashtags().add(hashtag);
-    }
-
-    public void addHashtags(Collection<Hashtag> hashtags) {
-        this.getHashtags().addAll(hashtags);
-    }
-
-    public void clearHashtags() {
-        this.getHashtags().clear();
     }
 
     @Override

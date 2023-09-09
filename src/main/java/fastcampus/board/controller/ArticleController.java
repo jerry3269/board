@@ -7,6 +7,7 @@ import fastcampus.board.dto.security.BoardPrincipal;
 import fastcampus.board.dto.response.ArticleResponse;
 import fastcampus.board.dto.response.ArticleWithCommentsResponse;
 import fastcampus.board.service.ArticleService;
+import fastcampus.board.service.HashtagService;
 import fastcampus.board.service.PaginationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * /articles
@@ -34,6 +38,7 @@ public class ArticleController {
 
     private final ArticleService articleService;
     private final PaginationService paginationService;
+    private final HashtagService hashtagService;
 
     @GetMapping
     public String articles(
@@ -69,7 +74,7 @@ public class ArticleController {
     ) {
         Page<ArticleResponse> articles = articleService.searchArticlesViaHashtag(searchValue, pageable).map(ArticleResponse::from);
         List<Integer> barNumbers = paginationService.getPaginationBarNumbers(pageable.getPageNumber(), articles.getTotalPages());
-        List<String> hashtags = articleService.getHashtags();
+        List<String> hashtags = hashtagService.getHashtags();
 
         model.addAttribute("articles", articles);
         model.addAttribute("hashtags", hashtags);
