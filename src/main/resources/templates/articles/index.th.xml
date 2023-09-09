@@ -23,6 +23,12 @@
             searchType=${param.searchType},
             searchValue=${param.searchValue}
         )}"/>
+                <attr sel="th.hashtag/a" th:text="'해시태그'" th:href="@{/articles(
+            page=${articles.number},
+            sort='hashtags' + (*{sort.getOrderFor('hashtags')} != null ? (*{sort.getOrderFor('hashtags').direction.name} != 'DESC' ? ',desc' : '') : ''),
+            searchType=${param.searchType},
+            searchValue=${param.searchValue}
+        )}"/>
                 <attr sel="th.user-id/a" th:text="'작성자'" th:href="@{/articles(
             page=${articles.number},
             sort='userAccount.userId' + (*{sort.getOrderFor('userAccount.userId')} != null ? (*{sort.getOrderFor('userAccount.userId').direction.name} != 'DESC' ? ',desc' : '') : ''),
