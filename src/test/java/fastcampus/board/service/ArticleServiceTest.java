@@ -47,8 +47,6 @@ class ArticleServiceTest {
     private ArticleRepository articleRepository;
     @Mock
     private UserAccountRepository userAccountRepository;
-    @Mock
-    private HashtagRepository hashtagRepository;
 
     @DisplayName("검색어 없이 게시글을 검색하면, 게시글 리스트를 반환한다.")
     @Test
@@ -93,7 +91,7 @@ class ArticleServiceTest {
 
         // Then
         assertThat(articles).isEqualTo(Page.empty(pageable));
-        then(hashtagRepository).shouldHaveNoInteractions();
+        then(hashtagService).shouldHaveNoInteractions();
         then(articleRepository).shouldHaveNoInteractions();
     }
 
@@ -338,22 +336,6 @@ class ArticleServiceTest {
         // Then
         assertThat(actual).isEqualTo(expected);
         then(articleRepository).should().count();
-    }
-
-    @DisplayName("해시태그를 조회하면, 유니크 해시태그 리스트를 반환한다")
-    @Test
-    void givenNothing_whenCalling_thenReturnsHashtags() {
-        // Given
-        Article article = createArticle();
-        List<String> expectedHashtags = List.of("java", "spring", "boot");
-        given(hashtagRepository.findAllHashtagNames()).willReturn(expectedHashtags);
-
-        // When
-        List<String> actualHashtags = sut.getHashtags();
-
-        // Then
-        assertThat(actualHashtags).isEqualTo(expectedHashtags);
-        then(hashtagRepository).should().findAllHashtagNames();
     }
 
     private UserAccount createUserAccount() {

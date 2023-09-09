@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +18,7 @@ import java.util.regex.Pattern;
 public class HashtagService {
 
     private final HashtagRepository hashtagRepository;
+    private final ArticleHashtagService articleHashtagService;
 
     public Set<Hashtag> findHashtagsByNames(Set<String> hashtagNames) {
         return new HashSet<>(hashtagRepository.findByHashtagNameIn(hashtagNames));
@@ -42,10 +44,13 @@ public class HashtagService {
 
     @Transactional
     public void deleteHashtagWithoutArticles(Long hashtagId) {
-        Hashtag hashtag = hashtagRepository.getReferenceById(hashtagId);
-        if (hashtag.getArticles().isEmpty()) {
-            hashtagRepository.delete(hashtag);
+        if(!articleHashtagService.isExistForHashtagId(hashtagId)){
+            hashtagRepository.deleteById(hashtagId);
         }
+    }
+
+    public List<String> getHashtags() {
+        return hashtagRepository.findAllHashtagNames();
     }
 
 }

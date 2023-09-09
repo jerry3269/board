@@ -1,5 +1,6 @@
 package fastcampus.board.service;
 
+import fastcampus.board.domain.Article;
 import fastcampus.board.domain.Hashtag;
 import fastcampus.board.repository.HashtagRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -101,6 +102,21 @@ class HashtagServiceTest {
         // Then
         assertThat(hashtags).hasSize(2);
         then(hashtagRepository).should().findByHashtagNameIn(hashtagNames);
+    }
+
+    @DisplayName("해시태그를 조회하면, 유니크 해시태그 리스트를 반환한다")
+    @Test
+    void givenNothing_whenCalling_thenReturnsHashtags() {
+        // Given
+        List<String> expectedHashtags = List.of("java", "spring", "boot");
+        given(hashtagRepository.findAllHashtagNames()).willReturn(expectedHashtags);
+
+        // When
+        List<String> actualHashtags = sut.getHashtags();
+
+        // Then
+        assertThat(actualHashtags).isEqualTo(expectedHashtags);
+        then(hashtagRepository).should().findAllHashtagNames();
     }
 
 }
