@@ -3,6 +3,7 @@ package fastcampus.board.repository.querydsl;
 import com.querydsl.jpa.JPQLQuery;
 import fastcampus.board.domain.Article;
 import fastcampus.board.domain.QArticle;
+import fastcampus.board.domain.QArticleHashtag;
 import fastcampus.board.domain.QHashtag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,29 +19,6 @@ public class ArticleRepositoryCustomImpl extends QuerydslRepositorySupport imple
 
     public ArticleRepositoryCustomImpl() {
         super(Article.class);
-    }
-
-    @Override
-    public List<String> findAllDistinctHashtags() {
-        QArticle article = QArticle.article;
-
-        return from(article)
-                .select(article.hashtags.any().hashtagName)
-                .distinct()
-                .fetch();
-    }
-
-    @Override
-    public Page<Article> findByHashtagNames(Collection<String> hashtagNames, Pageable pageable) {
-        QHashtag hashtag = QHashtag.hashtag;
-        QArticle article = QArticle.article;
-
-        JPQLQuery<Article> query = from(article)
-                .innerJoin(article.hashtags, hashtag)
-                .where(hashtag.hashtagName.in(hashtagNames));
-        List<Article> articles = getQuerydsl().applyPagination(pageable, query).fetch();
-
-        return new PageImpl<>(articles, pageable, query.fetchCount());
     }
 
 }
