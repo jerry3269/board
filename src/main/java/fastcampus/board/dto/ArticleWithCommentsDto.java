@@ -1,6 +1,7 @@
 package fastcampus.board.dto;
 
 import fastcampus.board.domain.Article;
+import fastcampus.board.domain.Hashtag;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
@@ -26,7 +27,7 @@ public record ArticleWithCommentsDto(
         return new ArticleWithCommentsDto(id, userAccountDto, articleCommentDtos, title, content, hashtagDtos, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
-    public static ArticleWithCommentsDto from(Article entity) {
+    public static ArticleWithCommentsDto from(Article entity, Set<Hashtag> hashtags) {
         return new ArticleWithCommentsDto(
                 entity.getId(),
                 UserAccountDto.from(entity.getUserAccount()),
@@ -35,7 +36,7 @@ public record ArticleWithCommentsDto(
                         .collect(Collectors.toCollection(LinkedHashSet::new)),
                 entity.getTitle(),
                 entity.getContent(),
-                entity.getHashtags().stream()
+                hashtags.stream()
                         .map(HashtagDto::from)
                         .collect(Collectors.toUnmodifiableSet()),
                 entity.getCreatedAt(),

@@ -1,8 +1,9 @@
 package fastcampus.board.dto;
 
 import fastcampus.board.domain.Article;
+import fastcampus.board.domain.Hashtag;
 import fastcampus.board.domain.UserAccount;
-import fastcampus.board.dto.UserAccountDto;
+import fastcampus.board.dto.query.ArticleSelectDto;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -29,13 +30,13 @@ public record ArticleDto(
         return new ArticleDto(id, userAccountDto, title, content, hashtagDtos, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
-    public static ArticleDto from(Article entity) {
-        return new ArticleDto(
+    public static ArticleDto from(Article entity, Set<Hashtag> hashtags) {
+        return ArticleDto.of(
                 entity.getId(),
                 UserAccountDto.from(entity.getUserAccount()),
                 entity.getTitle(),
                 entity.getContent(),
-                entity.getHashtags().stream()
+                hashtags.stream()
                         .map(HashtagDto::from)
                         .collect(Collectors.toUnmodifiableSet()),
                 entity.getCreatedAt(),
@@ -45,6 +46,21 @@ public record ArticleDto(
         );
     }
 
+    public static ArticleDto from(ArticleSelectDto selectDto, Set<Hashtag> hashtags) {
+        return ArticleDto.of(
+                selectDto.id(),
+                UserAccountDto.from(selectDto.userAccount()),
+                selectDto.title(),
+                selectDto.content(),
+                hashtags.stream()
+                        .map(HashtagDto::from)
+                        .collect(Collectors.toUnmodifiableSet()),
+                selectDto.createdAt(),
+                selectDto.createdBy(),
+                selectDto.modifiedAt(),
+                selectDto.modifiedBy()
+        );
+    }
     public Article toEntity(UserAccount userAccount) {
         return Article.of(
                 userAccount,

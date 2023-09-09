@@ -1,5 +1,6 @@
 package fastcampus.board.dto;
 
+import fastcampus.board.domain.Article;
 import fastcampus.board.domain.Hashtag;
 
 import java.time.LocalDateTime;
@@ -27,11 +28,11 @@ public record HashtagWithArticlesDto(
         return new HashtagWithArticlesDto(id, articleDtos, hashtagName, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
-    public static HashtagWithArticlesDto from(Hashtag entity) {
+    public static HashtagWithArticlesDto from(Hashtag entity, Set<Article> articles) {
         return HashtagWithArticlesDto.of(
                 entity.getId(),
-                entity.getArticles().stream()
-                        .map(ArticleDto::from)
+                articles.stream()
+                        .map(article -> ArticleDto.from(article, Set.of(entity)))
                         .collect(Collectors.toUnmodifiableSet()),
                 entity.getHashtagName(),
                 entity.getCreatedAt(),
