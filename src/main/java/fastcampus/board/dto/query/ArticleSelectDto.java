@@ -11,6 +11,7 @@ public record ArticleSelectDto (
         UserAccount userAccount,
         String title,
         String content,
+        String hashtagName,
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime modifiedAt,

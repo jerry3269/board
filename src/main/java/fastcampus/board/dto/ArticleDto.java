@@ -46,14 +46,14 @@ public record ArticleDto(
         );
     }
 
-    public static ArticleDto from(ArticleSelectDto selectDto, Set<Hashtag> hashtags) {
+    public static ArticleDto from(ArticleSelectDto selectDto, Set<String> hashtagNames) {
         return ArticleDto.of(
                 selectDto.id(),
                 UserAccountDto.from(selectDto.userAccount()),
                 selectDto.title(),
                 selectDto.content(),
-                hashtags.stream()
-                        .map(HashtagDto::from)
+                hashtagNames.stream()
+                        .map(hashtagName -> HashtagDto.from(hashtagName))
                         .collect(Collectors.toUnmodifiableSet()),
                 selectDto.createdAt(),
                 selectDto.createdBy(),
