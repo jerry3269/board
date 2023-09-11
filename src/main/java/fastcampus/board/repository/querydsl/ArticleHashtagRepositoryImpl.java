@@ -45,6 +45,7 @@ public class ArticleHashtagRepositoryImpl extends QuerydslRepositorySupport impl
                         article.userAccount,
                         article.title,
                         article.content,
+                        hashtag.hashtagName,
                         article.createdAt,
                         article.createdBy,
                         article.modifiedAt,

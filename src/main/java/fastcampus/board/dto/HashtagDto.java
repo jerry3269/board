@@ -35,6 +35,10 @@ public record HashtagDto(
         );
     }
 
+    public static HashtagDto from(String hashtagName) {
+        return HashtagDto.of(hashtagName);
+    }
+
     public Hashtag toEntity() {
         return Hashtag.of(hashtagName);
     }
