@@ -44,11 +44,17 @@ public class Article extends AuditingFields{
         return new Article(userAccount, title, content);
     }
 
+    public void addHashtags(Set<Hashtag> hashtags) {
+        for (Hashtag hashtag : hashtags) {
+            ArticleHashtag.of(this, hashtag);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Article article)) return false;
-        return this.getId() != null && this.getId().equals(article.id);
+        return this.getId() != null && this.getId().equals(article.getId());
     }
 
     @Override

@@ -1,8 +1,11 @@
 package fastcampus.board.domain;
 
 import lombok.*;
+import org.springframework.beans.Mergeable;
 
 import javax.persistence.*;
+
+import static javax.persistence.CascadeType.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -15,11 +18,11 @@ public class ArticleHashtag extends AuditingFields{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {PERSIST, MERGE})
     @JoinColumn(name = "articleId")
     private Article article;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,  cascade = {PERSIST, MERGE})
     @JoinColumn(name = "hashtagId")
     private Hashtag hashtag;
 

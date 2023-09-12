@@ -1,6 +1,7 @@
 package fastcampus.board.dto.query;
 
 import com.querydsl.core.annotations.QueryProjection;
+import fastcampus.board.domain.Article;
 import fastcampus.board.domain.UserAccount;
 import lombok.Getter;
 

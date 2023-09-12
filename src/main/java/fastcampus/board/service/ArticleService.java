@@ -90,6 +90,7 @@ public class ArticleService {
 
 
                 Set<Hashtag> hashtags = renewHashtagsFormContent(dto.content());
+
                 articleHashtagService.saveArticleHashtags(article, hashtags);
             }
         } catch (EntityNotFoundException e) {
@@ -99,6 +100,10 @@ public class ArticleService {
 
     @Transactional
     public void deleteArticle(long articleId, String userId) {
+        Article article = articleRepository.getReferenceById(articleId);
+        if (!article.getUserAccount().getUserId().equals(userId)) {
+            throw new SecurityException("접근 권한이 없는 User 입니다. 현재 userID: " + article.getUserAccount().getUserId());
+        }
         Set<Long> hashtagIds = articleHashtagService.getHashtagIdsByArticleId(articleId);
         articleHashtagService.deleteArticleHashtagsByArticleId(articleId);
         articleRepository.deleteByIdAndUserAccount_UserId(articleId, userId);
