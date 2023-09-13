@@ -6,6 +6,7 @@ import fastcampus.board.domain.UserAccount;
 import fastcampus.board.domain.constant.SearchType;
 import fastcampus.board.dto.ArticleDto;
 import fastcampus.board.dto.ArticleWithCommentsDto;
+import fastcampus.board.dto.query.ArticleHashtagDto;
 import fastcampus.board.dto.query.ArticleSelectDto;
 import fastcampus.board.repository.ArticleHashtagRepository;
 import fastcampus.board.repository.ArticleRepository;
@@ -20,9 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -37,28 +40,33 @@ public class ArticleService {
 
     public Page<ArticleDto> searchArticles(SearchType searchType, String searchKeyword, Pageable pageable) {
         if (searchKeyword == null || searchKeyword.isBlank()) {
-            return articleRepository.findAll(pageable).map(this::createArticleDtoWithHashtagByArticleId);
+            return createArticleDtoWithHashtagByArticlePage(articleRepository.findAll(pageable));
         }
 
         return switch (searchType) {
-            case TITLE -> articleRepository.findByTitleContaining(searchKeyword, pageable).map(this::createArticleDtoWithHashtagByArticleId);
-            case CONTENT -> articleRepository.findByContentContaining(searchKeyword, pageable).map(this::createArticleDtoWithHashtagByArticleId);
-            case ID -> articleRepository.findByUserAccount_UserIdContaining(searchKeyword, pageable).map(this::createArticleDtoWithHashtagByArticleId);
-            case NICKNAME -> articleRepository.findByUserAccount_NicknameContaining(searchKeyword, pageable).map(this::createArticleDtoWithHashtagByArticleId);
-            case HASHTAG -> createArticleDtoWithHashtagByArticleSelectDto(
-                    articleHashtagRepository.findByHashtagNames(Arrays.stream(searchKeyword.split(" ")).toList(), pageable));
+            case TITLE ->
+                    createArticleDtoWithHashtagByArticlePage(articleRepository.findByTitleContaining(searchKeyword, pageable));
+            case CONTENT ->
+                    createArticleDtoWithHashtagByArticlePage(articleRepository.findByContentContaining(searchKeyword, pageable));
+            case ID ->
+                    createArticleDtoWithHashtagByArticlePage(articleRepository.findByUserAccount_UserIdContaining(searchKeyword, pageable));
+            case NICKNAME ->
+                    createArticleDtoWithHashtagByArticlePage(articleRepository.findByUserAccount_NicknameContaining(searchKeyword, pageable));
+            case HASHTAG ->
+                    createArticleDtoWithHashtagByArticleSelectDtoPage(articleHashtagRepository.findByHashtagNames(Arrays.stream(searchKeyword.split(" ")).toList(), pageable));
         };
     }
 
     public ArticleWithCommentsDto getArticleWithComments(Long articleId) {
         return articleRepository.findById(articleId)
-                .map(this::createArticleWithCommentsDtoWithHashtagByArticleId)
+                .map(this::createArticleWithCommentsDtoWithHashtagByArticle)
                 .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다 - articleId: " + articleId));
     }
 
     public ArticleDto getArticle(Long articleId) {
         return articleRepository.findById(articleId)
-                .map(this::createArticleDtoWithHashtagByArticleId)
+                .map(article ->
+                        ArticleDto.from(article, articleHashtagService.getHashtagNamesByArticleId(articleId)))
                 .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다 - articleId: " + articleId));
     }
 
@@ -78,19 +86,20 @@ public class ArticleService {
             Article article = articleRepository.getReferenceById(articleId);
             UserAccount userAccount = userAccountRepository.getReferenceById(dto.userAccountDto().userId());
 
-            if(article.getUserAccount().equals(userAccount)){
-                if(dto.title() != null) {article.setTitle(dto.title());}
-                if(dto.content() != null) {article.setContent(dto.content());}
-
+            if (article.getUserAccount().equals(userAccount)) {
+                if (dto.title() != null) {
+                    article.setTitle(dto.title());
+                }
+                if (dto.content() != null) {
+                    article.setContent(dto.content());
+                }
                 Set<Long> hashtagIds = articleHashtagService.getHashtagIdsByArticleId(articleId);
                 articleHashtagService.deleteArticleHashtagsByArticleId(articleId);
                 articleRepository.flush();
 
                 hashtagIds.forEach(hashtagService::deleteHashtagWithoutArticles);
 
-
                 Set<Hashtag> hashtags = renewHashtagsFormContent(dto.content());
-
                 articleHashtagService.saveArticleHashtags(article, hashtags);
             }
         } catch (EntityNotFoundException e) {
@@ -111,6 +120,7 @@ public class ArticleService {
 
         hashtagIds.forEach(hashtagService::deleteHashtagWithoutArticles);
     }
+
     public long getArticleCount() {
         return articleRepository.count();
     }
@@ -120,11 +130,8 @@ public class ArticleService {
             return Page.empty(pageable);
         }
 
-        return createArticleDtoWithHashtagByArticleSelectDto(
-                articleHashtagRepository.findByHashtagNames(List.of(hashtagName), pageable));
-
+        return createArticleDtoWithHashtagByArticleSelectDtoPage(articleHashtagRepository.findByHashtagNames(List.of(hashtagName), pageable));
     }
-
 
     private Set<Hashtag> renewHashtagsFormContent(String content) {
         Set<String> hashtagNamesInContent = hashtagService.parseHashtagNames(content);
@@ -134,7 +141,7 @@ public class ArticleService {
                 .collect(toUnmodifiableSet());
 
         hashtagNamesInContent.forEach(newHashtagNames -> {
-            if(!existingHashtagNames.contains(newHashtagNames)){
+            if (!existingHashtagNames.contains(newHashtagNames)) {
                 hashtags.add(Hashtag.of(newHashtagNames));
             }
         });
@@ -142,27 +149,45 @@ public class ArticleService {
         return hashtags;
     }
 
-    private ArticleDto createArticleDtoWithHashtagByArticleId(Article article) {
+    private ArticleWithCommentsDto createArticleWithCommentsDtoWithHashtagByArticle(Article article) {
+        return ArticleWithCommentsDto.from(article, articleHashtagService.getHashtagNamesByArticleId(article.getId()));
+    }
+    
+    private Page<ArticleDto> createArticleDtoWithHashtagByArticlePage(Page<Article> articlePage) {
+        Map<Long, Set<String>> articleHashtagsMap = getArticleHashtagMapFromArticlePage(articlePage.stream().map(Article::getId));
 
-        return ArticleDto.from(article, articleHashtagService.getHashtagsByArticleId(article.getId()));
+        List<ArticleDto> collect = articlePage.stream()
+                .map(article -> ArticleDto.from(article, articleHashtagsMap.get(article.getId())))
+                .toList();
+
+        return new PageImpl<>(collect, articlePage.getPageable(), articlePage.getTotalElements());
     }
 
-    private ArticleWithCommentsDto createArticleWithCommentsDtoWithHashtagByArticleId(Article article) {
-        return ArticleWithCommentsDto.from(article, articleHashtagService.getHashtagsByArticleId(article.getId()));
+    private Page<ArticleDto> createArticleDtoWithHashtagByArticleSelectDtoPage(Page<ArticleSelectDto> selectDtoPage) {
+        Map<Long, Set<String>> articleHashtagsMap = getArticleHashtagMapFromArticlePage(selectDtoPage.stream().map(ArticleSelectDto::id));
+
+        List<ArticleDto> collect = selectDtoPage.stream()
+                .map(selectDto -> ArticleDto.from(selectDto, articleHashtagsMap.get(selectDto.id())))
+                .toList();
+
+        return new PageImpl<>(collect, selectDtoPage.getPageable(), selectDtoPage.getTotalElements());
     }
 
-    private Page<ArticleDto> createArticleDtoWithHashtagByArticleSelectDto(Page<ArticleSelectDto> selectDtos) {
-        Map<Long, Set<String>> hashtagMap = createHashtagMap(selectDtos);
+    private Map<Long, Set<String>> getArticleHashtagMapFromArticlePage(Stream<Long> articlePage) {
+        Set<Long> articledIds = articlePage.collect(Collectors.toUnmodifiableSet());
 
-        List<ArticleDto> collect = selectDtos.stream().map(selectDto -> ArticleDto.from(selectDto, hashtagMap.get(selectDto.id())))
-                .collect(toList());
+        Map<Long, Set<String>> articleHashtagsMap = articledIds.stream()
+                .collect(Collectors.toMap(Function.identity(), id -> new HashSet<>()));
 
-        return new PageImpl<>(collect, selectDtos.getPageable(), selectDtos.getTotalElements());
+        Set<ArticleHashtagDto> articleHashtagDtos =
+                articleHashtagRepository.findDtoByArticleIds(articledIds);
+
+        articleHashtagDtos
+                .forEach(articleHashtagDto ->
+                        articleHashtagsMap.get(articleHashtagDto.articleId()).add(articleHashtagDto.hashtagName()));
+
+        return articleHashtagsMap;
     }
 
-    private static Map<Long, Set<String>> createHashtagMap(Page<ArticleSelectDto> selectDtos) {
-        return selectDtos.stream()
-                .collect(Collectors.groupingBy(ArticleSelectDto::id,
-                        Collectors.mapping(ArticleSelectDto::hashtagName, Collectors.toSet())));
-    }
 }
+

@@ -38,9 +38,10 @@ public class ArticleHashtag extends AuditingFields{
     public Long getHashtagId() {
         return this.getHashtag().getId();
     }
-
     public Long getArticleId() {
         return this.getArticle().getId();
     }
+    public String getHashtagName() { return this.getHashtag().getHashtagName();}
+
 }
 
