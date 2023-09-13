@@ -6,7 +6,7 @@ pageable : article에 대한 페이징 및 정렬 데이터를 가지고 있음.
 
 ---
 
-#### 1. #86 - bf5175a
+#### 1. [#86](github.com/jerry3269/board/issues/86) - bf5175a
 
 * 문제 : articleHashtag에 조회쿼리를 날리기 때문에 article의 필드로 정렬할 수 없게 됨.
 
@@ -81,7 +81,7 @@ private Comparator<ArticleSelectDto> getArticleComparator(Sort sort) {
 
 ---
 
-#### 2. #87 - 58d5d04
+#### 2. [#87](github.com/jerry3269/board/issues/87) - 58d5d04
 
 * 문제 : 
   
@@ -111,7 +111,7 @@ select(new QArticleSelectDto(
 
 ---
 
-#### 3. #90 - 7405ea3
+#### 3. [#90](github.com/jerry3269/board/issues/90) - 7405ea3
 
 * 문제 : 
   
