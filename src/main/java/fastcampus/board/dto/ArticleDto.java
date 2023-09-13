@@ -30,13 +30,13 @@ public record ArticleDto(
         return new ArticleDto(id, userAccountDto, title, content, hashtagDtos, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
-    public static ArticleDto from(Article entity, Set<Hashtag> hashtags) {
+    public static ArticleDto from(Article entity, Set<String> hashtagNames) {
         return ArticleDto.of(
                 entity.getId(),
                 UserAccountDto.from(entity.getUserAccount()),
                 entity.getTitle(),
                 entity.getContent(),
-                hashtags.stream()
+                hashtagNames.stream()
                         .map(HashtagDto::from)
                         .collect(Collectors.toUnmodifiableSet()),
                 entity.getCreatedAt(),
@@ -53,7 +53,7 @@ public record ArticleDto(
                 selectDto.title(),
                 selectDto.content(),
                 hashtagNames.stream()
-                        .map(hashtagName -> HashtagDto.from(hashtagName))
+                        .map(HashtagDto::from)
                         .collect(Collectors.toUnmodifiableSet()),
                 selectDto.createdAt(),
                 selectDto.createdBy(),

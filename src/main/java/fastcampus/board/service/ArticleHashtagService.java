@@ -54,6 +54,13 @@ public class ArticleHashtagService {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
+    public Set<String> getHashtagNamesByArticleId(Long articleId) {
+        Set<ArticleHashtag> articleHashtags = articleHashtagRepository.findByArticleId(articleId);
+        return articleHashtags.stream()
+                .map(ArticleHashtag::getHashtagName)
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
     public boolean isExistForHashtagId(Long hashtagId) {
         Set<ArticleHashtag> articleHashtags = articleHashtagRepository.findByHashtag_Id(hashtagId);
         if (articleHashtags.isEmpty()) {

@@ -32,7 +32,7 @@ public record HashtagWithArticlesDto(
         return HashtagWithArticlesDto.of(
                 entity.getId(),
                 articles.stream()
-                        .map(article -> ArticleDto.from(article, Set.of(entity)))
+                        .map(article -> ArticleDto.from(article, Set.of(entity.getHashtagName())))
                         .collect(Collectors.toUnmodifiableSet()),
                 entity.getHashtagName(),
                 entity.getCreatedAt(),
