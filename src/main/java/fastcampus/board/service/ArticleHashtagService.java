@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,13 +27,17 @@ public class ArticleHashtagService {
     }
 
     @Transactional
-    public void saveArticleHashtags(Article article, Collection<Hashtag> hashtags) {
+    public Set<ArticleHashtag> saveArticleHashtags(Article article, Collection<Hashtag> hashtags) {
+        Set<ArticleHashtag> articleHashtags = new HashSet<>();
         for (Hashtag hashtag : hashtags) {
             if (hashtagRepository.findByHashtagName(hashtag.getHashtagName()).isEmpty()) {
                 hashtagRepository.save(hashtag);
             }
-            articleHashtagRepository.save(ArticleHashtag.of(article, hashtag));
+            ArticleHashtag articleHashtag = ArticleHashtag.of(article, hashtag);
+            articleHashtagRepository.save(articleHashtag);
+            articleHashtags.add(articleHashtag);
         }
+        return articleHashtags;
     }
 
     @Transactional
