@@ -8,9 +8,9 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 public record ArticleSelectDto (
-        long id,
+        @Getter long id,
         UserAccount userAccount,
-        String title,
+        @Getter String title,
         String content,
         LocalDateTime createdAt,
         String createdBy,
@@ -22,4 +22,7 @@ public record ArticleSelectDto (
     public ArticleSelectDto {
     }
 
+    public static ArticleSelectDto of(long id, UserAccount userAccount, String title, String content, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+        return new ArticleSelectDto(id, userAccount, title, content, createdAt, createdBy, modifiedAt, modifiedBy);
+    }
 }

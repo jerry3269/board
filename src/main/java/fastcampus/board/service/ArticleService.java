@@ -32,11 +32,11 @@ import static java.util.stream.Collectors.toUnmodifiableSet;
 @Transactional(readOnly = true)
 @Service
 public class ArticleService {
-    private final ArticleHashtagRepository articleHashtagRepository;
     private final ArticleHashtagService articleHashtagService;
     private final HashtagService hashtagService;
     private final ArticleRepository articleRepository;
     private final UserAccountRepository userAccountRepository;
+    private final ArticleHashtagRepository articleHashtagRepository;
 
     public Page<ArticleDto> searchArticles(SearchType searchType, String searchKeyword, Pageable pageable) {
         if (searchKeyword == null || searchKeyword.isBlank()) {

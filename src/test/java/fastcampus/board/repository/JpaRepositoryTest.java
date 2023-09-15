@@ -1,6 +1,7 @@
 package fastcampus.board.repository;
 
 import fastcampus.board.domain.*;
+import fastcampus.board.dto.query.ArticleSelectDto;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -10,12 +11,15 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,6 +66,8 @@ class JpaRepositoryTest {
     void givenTestData_whenInserting_thenWorksFine(){
         //given
         long previousArticleCount = articleRepository.count();
+        long previousHashtagCount = hashtagRepository.count();
+        long previousArticleHashtagCount = articleHashtagRepository.count();
         UserAccount userAccount = userAccountRepository.save(UserAccount.of("testId", "pw", null, null, null));
         Article article = Article.of(userAccount, "new article", "new content");
         ArticleHashtag articleHashtag = ArticleHashtag.of(article, Hashtag.of("spring"));
@@ -71,6 +77,8 @@ class JpaRepositoryTest {
         
         //then
         assertThat(articleRepository.count()).isEqualTo(previousArticleCount + 1);
+        assertThat(hashtagRepository.count()).isEqualTo(previousHashtagCount + 1);
+        assertThat(articleHashtagRepository.count()).isEqualTo(previousArticleHashtagCount + 1);
     }
 
     @DisplayName("update 테스트")
@@ -131,11 +139,7 @@ class JpaRepositoryTest {
     void givenParentComment_whenSaving_thenInsertsChildComment() {
         // Given
         ArticleComment parentComment = articleCommentRepository.getReferenceById(1L);
-        ArticleComment childComment = ArticleComment.of(
-                parentComment.getArticle(),
-                parentComment.getUserAccount(),
-                "대댓글"
-        );
+        ArticleComment childComment = ArticleComment.of(parentComment.getArticle(), parentComment.getUserAccount(), "대댓글");
 
         // When
         parentComment.addChildComment(childComment);
@@ -187,29 +191,27 @@ class JpaRepositoryTest {
         assertThat(hashtagNames).hasSize(19);
     }
 
-//    @Disabled
-//    @DisplayName("[Querydsl] hashtag로 페이징된 게시글 검색하기")
-//    @Test
-//    void givenHashtagNamesAndPageable_whenQueryingArticles_thenReturnsArticlePage() {
-//        // Given
-//        List<String> hashtagNames = List.of("blue", "crimson", "fuscia");
-//        Pageable pageable = PageRequest.of(0, 5, Sort.by(
-//                Sort.Order.desc("hashtags.hashtagName"),
-//                Sort.Order.asc("title")
-//        ));
-//
-//        // When
-//        Page<Article> articlePage = articleRepository.findByHashtagNames(hashtagNames, pageable);
-//
-//        // Then
-//        assertThat(articlePage.getContent()).hasSize(pageable.getPageSize());
-//        assertThat(articlePage.getContent().get(0).getTitle()).isEqualTo("Fusce posuere felis sed lacus.");
-//        assertThat(articlePage.getContent().get(0).getHashtags())
-//                .extracting("hashtagName", String.class)
-//                .containsExactly("fuscia");
-//        assertThat(articlePage.getTotalElements()).isEqualTo(17);
-//        assertThat(articlePage.getTotalPages()).isEqualTo(4);
-//    }
+    @Disabled
+    @DisplayName("[Querydsl] hashtag로 페이징된 게시글 검색하기")
+    @Test
+    void givenHashtagNamesAndPageable_whenQueryingArticles_thenReturnsArticlePage() {
+        // Given
+        List<String> hashtagNames = List.of("blue", "crimson", "fuscia");
+        Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Order.asc("title")));
+
+        // When
+        Page<ArticleSelectDto> articlePage = articleHashtagRepository.findByHashtagNames(hashtagNames, pageable);
+        Set<ArticleHashtag> hashtags = articleHashtagRepository.findByArticleId(articlePage.getContent().get(0).getId());
+
+        // Then
+        assertThat(articlePage.getContent()).hasSize(pageable.getPageSize());
+        assertThat(articlePage.getContent().get(0).getTitle()).isEqualTo("Duis aliquam convallis nunc.");
+        assertThat(hashtags)
+                .extracting("hashtagName", String.class)
+                .containsExactly("blue");
+        assertThat(articlePage.getTotalElements()).isEqualTo(17);
+        assertThat(articlePage.getTotalPages()).isEqualTo(4);
+    }
 
     @EnableJpaAuditing
     @TestConfiguration
