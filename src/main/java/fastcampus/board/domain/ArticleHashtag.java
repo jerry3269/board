@@ -18,11 +18,13 @@ public class ArticleHashtag extends AuditingFields{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {PERSIST, MERGE})
+    //TODO: Hal Explorer(api)를 사용하기 위해 fetch방식을 EAGER로 변경. 추후 api 제공방식을 변경하여 지연로딩으로 변경하자.
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {PERSIST, MERGE})
     @JoinColumn(name = "articleId")
     private Article article;
 
-    @ManyToOne(fetch = FetchType.LAZY,  cascade = {PERSIST, MERGE})
+    //TODO: Hal Explorer(api)를 사용하기 위해 fetch방식을 EAGER로 변경. 추후 api 제공방식을 변경하여 지연로딩으로 변경하자.
+    @ManyToOne(fetch = FetchType.EAGER,  cascade = {PERSIST, MERGE})
     @JoinColumn(name = "hashtagId")
     private Hashtag hashtag;
 
