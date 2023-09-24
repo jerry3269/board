@@ -26,8 +26,9 @@ public class ArticleComment extends AuditingFields{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter @ManyToOne(optional = false, fetch = FetchType.LAZY) private Article article;
-    @Setter @ManyToOne(optional = false, fetch = FetchType.LAZY) @JoinColumn(name = "userId") private UserAccount userAccount; // 유저 정보 (ID)
+    //TODO: Hal Explorer(api)를 사용하기 위해 fetch방식을 EAGER로 변경. 추후 api 제공방식을 변경하여 지연로딩으로 변경하자.
+    @Setter @ManyToOne(optional = false, fetch = FetchType.EAGER) private Article article;
+    @Setter @ManyToOne(optional = false, fetch = FetchType.EAGER) @JoinColumn(name = "userId") private UserAccount userAccount; // 유저 정보 (ID)
 
     @Setter @Column(updatable = false) private Long parentCommentId;
 
