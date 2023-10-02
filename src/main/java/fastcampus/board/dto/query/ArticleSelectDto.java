@@ -7,10 +7,11 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 public record ArticleSelectDto (
-        @Getter long id,
+        long id,
         UserAccount userAccount,
-        @Getter String title,
+        String title,
         String content,
         LocalDateTime createdAt,
         String createdBy,

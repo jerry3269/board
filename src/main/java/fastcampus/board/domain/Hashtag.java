@@ -3,9 +3,7 @@ package fastcampus.board.domain;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.LinkedHashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
