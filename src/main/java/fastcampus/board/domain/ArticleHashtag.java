@@ -1,11 +1,15 @@
 package fastcampus.board.domain;
 
-import lombok.*;
-import org.springframework.beans.Mergeable;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
-import static javax.persistence.CascadeType.*;
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
+
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -18,15 +22,23 @@ public class ArticleHashtag extends AuditingFields{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //TODO: Hal Explorer(api)를 사용하기 위해 fetch방식을 EAGER로 변경. 추후 api 제공방식을 변경하여 지연로딩으로 변경하자.
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {PERSIST, MERGE})
+    @ManyToOne(cascade = {PERSIST, MERGE})
     @JoinColumn(name = "articleId")
+    @ToString.Exclude
     private Article article;
 
-    //TODO: Hal Explorer(api)를 사용하기 위해 fetch방식을 EAGER로 변경. 추후 api 제공방식을 변경하여 지연로딩으로 변경하자.
-    @ManyToOne(fetch = FetchType.EAGER,  cascade = {PERSIST, MERGE})
+    @ManyToOne(cascade = {PERSIST, MERGE})
     @JoinColumn(name = "hashtagId")
+    @ToString.Exclude
     private Hashtag hashtag;
+
+    public void setHashtag(Hashtag hashtag) {
+        this.hashtag = hashtag;
+    }
+
+    public void setArticle(Article article) {
+        this.article = article;
+    }
 
     private ArticleHashtag(Article article, Hashtag hashtag) {
         this.article = article;
