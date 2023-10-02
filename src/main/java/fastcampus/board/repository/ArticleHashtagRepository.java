@@ -6,6 +6,7 @@ import fastcampus.board.domain.ArticleComment;
 import fastcampus.board.domain.ArticleHashtag;
 import fastcampus.board.domain.QArticle;
 import fastcampus.board.domain.QArticleHashtag;
+import fastcampus.board.domain.projection.ArticleHashtagProjection;
 import fastcampus.board.repository.querydsl.ArticleHashtagRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -15,7 +16,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.Set;
 
-@RepositoryRestResource
+@RepositoryRestResource(excerptProjection = ArticleHashtagProjection.class)
 public interface ArticleHashtagRepository extends
         JpaRepository<ArticleHashtag, Long>,
         ArticleHashtagRepositoryCustom,
